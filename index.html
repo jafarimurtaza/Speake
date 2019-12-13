@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>typing</title>
+    <style>
+    body{
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif,"Apple color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+        background-color: #269bfb;
+        font-size: 18px;
+        font-weight: bold;
+        line-height: 1.8;
+    }
+    body.orange {
+        background-color: #FFcc00;
+    }
+    .container {
+        max-width: 800px;
+        padding: 1rem 2.5rem;
+        margin: 2rem auto;
+        background-color:#fff;
+        min-height: 150px;
+        border-radius: 10px;
+        box-shadow: 0 10px 0 rgba(0, 0, 0, .2);
+
+    }
+    h1{
+        text-align: center;
+        font-weight: bold;
+    }
+    h3{
+        text-align: center;
+        font-weight: bold;
+    }
+    </style>
+
+</head>
+<body>
+    <h1>Making persian and English typing tools</h1>
+    <div class="container">
+   
+    </div>
+    <script>
+    window.SpeechRecognition = window.SpeechRecognition || 
+    window.webkitSpeechRecognition;
+
+    let container = document.querySelector('.container');
+    let  p = document.createElement('p');
+    p.setAttribute('contenteditable', 'true');
+    let span = document.createElement('span');
+
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'fa-IR';
+    recognition.interimResults = true;
+
+    recognition.start();
+    recognition.addEventListener('end', recognition.start);
+    recognition.addEventListener('result',(e) => {
+
+        container.appendChild(p);
+
+        let transcript =  Array.from(e.results)
+        .map((result) => {
+            return result[0]
+        })
+        .map((result) =>{
+            return result.transcript;
+        })
+        .join(' ');
+        if(transcript.includes('پس زمینه نارنجی')){
+            transcript = '';
+            document.body.classList.add('orange');
+        }
+
+        if(transcript.includes('انگلیسی تایپ کن') && e.results[0].isFinal){
+            recognition.stop();
+            recognition.lang = 'en-US';
+            transcript = '';
+            p = document.createElement('p');
+            p.setAttribute('contenteditable', 'true');
+            p.setAttribute('dir', 'itr');
+            container.appendChild(p);
+        }
+        if(transcript.includes('type in persian') && e.results[0].isFinal){
+            recognition.stop();
+            recognition.lang = 'fa-IR';
+            transcript = '';
+            p = document.createElement('p');
+            p.setAttribute('contenteditable', 'true');
+            p.setAttribute('dir', 'itr');
+            container.appendChild(p);
+        }
+
+
+
+        if(transcript.includes('علامت سوال')){
+            transcript = transcript.replace('علامت سوال', '؟')
+        }
+       if(transcript.includes('پلنگ خط بعدی') && e.results[0].isFinal){
+           transcript = '';
+           p = document.createElement('p');
+           p.setAttribute('contenteditable', 'true');
+           container.appendChild(p);
+
+       }
+        span.textContent = transcript + ' ';
+
+        p.appendChild(span);
+        if(e.results[0].isFinal){
+         span = document.createElement('span');
+         p.appendChild(span);
+          
+        }
+
+        if(transcript.includes('صفحه پاک شود')&& e.results[0].isFinal){
+            container.innerHTML = '';
+           p.innerHTML = '';
+        }
+
+         console.log(transcript);
+    })
+
+    // console.log(recognition);
+    </script>
+    <h1>Tips of this typing</h1>
+    <h3>when  i say type in persian: it will type persian:
+        if i say in persian type English  it will type English:
+    </h3>
+</body>
+</html>
